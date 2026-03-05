@@ -2,435 +2,262 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Work Order Digital - PT Amarilys Karisma Gemilang</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Form Digital PT AKG</title>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 20px;
-            font-size: 12px;
-        }
-
-        .controls {
-            width: 210mm;
-            margin: 0 auto 10px auto;
-            text-align: right;
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-        }
-
-        button.btn-primary {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        button.btn-primary:hover { background-color: #0056b3; }
-
-        .page {
-            width: 210mm;
-            min-height: 297mm;
-            background-color: white;
-            margin: 0 auto;
-            padding: 15px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            position: relative;
-        }
-
-        /* Helper Classes */
-        .bold { font-weight: bold; }
-        .text-center { text-align: center; }
-        .flex { display: flex; }
+        /* --- GAYA DASAR --- */
+        body { font-family: sans-serif; background: #eee; margin: 0; padding-bottom: 80px; }
         
-        /* Table Styles */
-        table { width: 100%; border-collapse: collapse; }
-        table, th, td { border: 1px solid black; }
-        td { padding: 2px; vertical-align: middle; }
-
-        /* Inputs Styling */
-        input[type="text"], 
-        input[type="date"],
-        input[type="time"],
-        textarea {
-            width: 100%;
-            box-sizing: border-box;
-            border: none;
-            background: rgba(255, 255, 0, 0.05);
-            font-family: inherit;
-            font-size: 11px;
-            padding: 2px 4px;
-            resize: none;
-            outline: none;
+        /* --- NAVIGASI TAB (ATAS) --- */
+        .tabs {
+            position: sticky; top: 0; z-index: 100;
+            display: flex; background: #333; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
+        .tab-btn {
+            flex: 1; padding: 15px; background: #333; color: #aaa;
+            border: none; font-weight: bold; font-size: 14px; cursor: pointer;
+        }
+        .tab-btn.active { background: #007bff; color: white; }
 
-        input[type="text"]:focus, textarea:focus { background-color: #e0f7fa; }
-        input[type="checkbox"] { vertical-align: middle; margin-right: 4px; }
+        /* --- KERTAS KERJA --- */
+        .paper {
+            width: 210mm; min-height: 297mm; background: white; margin: 10px auto;
+            padding: 15px; box-sizing: border-box; border: 1px solid #ccc;
+            display: none; /* Default sembunyi */
+        }
+        .paper.active { display: block; }
 
-        /* Specific Sections */
-        .header-table td { border: 1px solid black; }
-        .no-border td { border: none; }
+        /* --- INPUT & TABEL --- */
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        th, td { border: 1px solid black; padding: 2px; }
+        th { background: #ddd; }
         
-        .logo-box {
-            font-size: 24px;
-            font-weight: 900;
-            font-style: italic;
-            border: 2px solid black;
-            padding: 2px 8px;
-            display: inline-block;
-            margin-right: 10px;
+        /* Input agar mudah diketik di HP */
+        input, textarea, select {
+            width: 100%; border: none; background: #fff9c4; /* Kuning stabilo */
+            padding: 5px; box-sizing: border-box; font-family: inherit; font-size: 11px;
         }
+        input:focus, textarea:focus { background: #e0f7fa; }
+        input[type="checkbox"] { width: 20px; height: 20px; vertical-align: middle; }
 
-        .section-header {
-            background-color: #333;
-            color: white;
-            padding: 3px 5px;
-            font-weight: bold;
-            font-size: 11px;
-            margin-top: 5px;
-            border: 1px solid black;
-        }
+        /* Agar tabel bisa digeser di HP */
+        .scroll-table { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-        .lined-textarea {
-            width: 100%;
-            line-height: 20px;
-            background-image: repeating-linear-gradient(transparent, transparent 19px, #ccc 20px);
-            background-color: transparent;
-            border: 1px solid black;
-            padding: 0 5px;
-        }
+        /* --- HEADER KHUSUS --- */
+        .logo-box { border: 2px solid black; padding: 2px 5px; font-weight: 900; font-style: italic; display: inline-block; }
+        .head-title { background: #333; color: white; padding: 5px; font-weight: bold; font-size: 12px; margin-top: 5px; }
 
-        .data-table th { background-color: #ccc; font-size: 11px; padding: 4px; }
-        .data-table td { padding: 0; height: 20px; }
-        .data-table input { height: 100%; width: 100%; border: none; }
+        /* --- TANDA TANGAN --- */
+        .sig-pad { border: 1px dashed #999; background: #f9f9f9; touch-action: none; cursor: crosshair; margin: 5px auto; }
+        .btn-clear { background: #ff4444; color: white; border: none; padding: 2px 8px; font-size: 10px; border-radius: 3px; cursor: pointer; }
 
-        /* SIGNATURE CANVAS STYLES */
-        .signature-section {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-            padding: 0 10px;
-            text-align: center;
+        /* --- TOMBOL AKSI (BAWAH) --- */
+        .bottom-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: white; padding: 10px; border-top: 1px solid #ccc;
+            display: flex; gap: 10px; z-index: 100;
         }
-        .sig-box { 
-            width: 32%; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .btn-action {
+            flex: 1; padding: 12px; border: none; border-radius: 5px;
+            font-weight: bold; color: white; font-size: 14px; cursor: pointer;
         }
-        .canvas-container {
-            border-bottom: 1px dotted black;
-            background-color: #fafafa;
-            margin-bottom: 5px;
-            position: relative;
-            cursor: crosshair;
-        }
-        canvas {
-            display: block;
-        }
-        .clear-sig-btn {
-            font-size: 10px;
-            color: red;
-            background: none;
-            border: 1px solid #ccc;
-            cursor: pointer;
-            margin-top: 2px;
-            padding: 2px 5px;
-        }
+        .btn-save { background: #28a745; }
+        .btn-print { background: #6c757d; }
 
-        /* Print Settings */
+        /* --- RESPONSIF HP --- */
+        @media screen and (max-width: 800px) {
+            .paper { width: 100%; margin: 0; border: none; }
+        }
         @media print {
-            body { background: white; padding: 0; }
-            .controls { display: none; }
-            .page { border: none; box-shadow: none; margin: 0; width: 100%; }
-            .clear-sig-btn { display: none; }
-            .canvas-container { background-color: transparent; }
+            .tabs, .bottom-bar, .btn-clear { display: none !important; }
+            .paper { display: none; border: none; margin: 0; width: 100%; }
+            .paper.active { display: block; }
             input, textarea { background: transparent !important; }
         }
     </style>
 </head>
 <body>
 
-<div class="controls">
-    <button onclick="window.print()" class="btn-primary" style="background-color: #6c757d;">🖨️ Print PDF</button>
-    <button onclick="saveAsImage()" class="btn-primary">💾 Simpan Gambar (JPG)</button>
-</div>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('tab1')">📝 WORK ORDER</button>
+        <button class="tab-btn" onclick="switchTab('tab2')">🛠️ LAPORAN</button>
+    </div>
 
-<div class="page" id="captureArea">
-    <table class="header-table">
-        <tr>
-            <td style="width: 60%; padding: 5px;">
-                <div class="flex" style="align-items: center;">
-                    <span class="logo-box">AKG</span>
-                    <span style="font-weight: bold; font-size: 14px;">PT AMARILYS KARISMA GEMILANG</span>
-                </div>
-            </td>
-            <td style="width: 40%; padding: 0;">
-                <table class="no-border" style="width: 100%; font-size: 10px;">
-                    <tr><td width="40%">No Dokumen</td><td>: <input type="text" value="AF.SP.05.04.Rev-00" style="display:inline; width:120px;"></td></tr>
-                    <tr><td>Tanggal Terbit</td><td>: <input type="text" value="Mei 2024" style="display:inline; width:120px;"></td></tr>
-                    <tr><td>Halaman</td><td>: 1/1</td></tr>
-                    <tr><td>Tanggal Revisi</td><td>: <input type="text" value="-" style="display:inline; width:120px;"></td></tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2" class="text-center bold" style="background-color: #eee; font-size: 14px; padding: 5px;">WORK ORDER</td>
-        </tr>
-    </table>
-
-    <table class="no-border" style="width: 100%; margin-top: 5px;">
-        <tr>
-            <td style="width: 65%;">
-                <table>
-                    <tr>
-                        <td width="150">Pembuat Work Order</td>
-                        <td>: <input type="text" value="PE" style="width: 200px; border-bottom: 1px dotted #000;"></td>
-                    </tr>
-                    <tr>
-                        <td>Penerima Work Order</td>
-                        <td>: <input type="text" value="Machining" style="width: 200px; border-bottom: 1px dotted #000;"></td>
-                    </tr>
-                    <tr>
-                        <td>Tgl Penerimaan Work Order</td>
-                        <td>: <input type="date" value="2026-02-04" style="width: 200px; border-bottom: 1px dotted #000;"></td>
-                    </tr>
-                    <tr>
-                        <td>Jenis Pekerjaan</td>
-                        <td>: 
-                            <label><input type="checkbox"> Proyek</label> &nbsp;&nbsp;
-                            <label><input type="checkbox"> Set Up Ganti Molding</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td>&nbsp; <label><input type="checkbox" checked> Perbaikan</label></td>
-                    </tr>
-                </table>
-            </td>
-            <td style="width: 35%; border: 1px solid black; padding: 5px; vertical-align: top;">
-                <div class="bold" style="margin-bottom: 5px;">Status Work Order:</div>
-                <label><input type="checkbox" checked> Normal</label><br>
-                <label><input type="checkbox"> Urgent</label>
-            </td>
-        </tr>
-    </table>
-
-    <div class="section-header">Deskripsi Pekerjaan:</div>
-    <textarea rows="4" class="lined-textarea">Pembuatan Flange Siku Stand label me 08
-(Material alumunium tebal 10 mm) PxL = 118 x 34 x 25 (2 Pcs)
-dan pembuatan Flange Atas follow out</textarea>
-
-    <div class="section-header">Tindakan Yang Dikerjakan:</div>
-    <textarea rows="3" class="lined-textarea"></textarea>
-
-    <div style="font-weight: bold; margin-top: 10px; font-size: 11px;">Pemakaian stok Spare part:</div>
-    <table class="data-table">
-        <thead>
+    <div id="tab1" class="paper active">
+        <table style="margin-bottom: 5px;">
             <tr>
-                <th width="5%">NO</th>
-                <th width="55%">Nama Part</th>
-                <th width="20%">QTY</th>
-                <th width="20%">Sisa Stok</th>
+                <td width="60%">
+                    <span class="logo-box">AKG</span> <b>PT AMARILYS KARISMA GEMILANG</b>
+                </td>
+                <td style="font-size: 10px;">
+                    No Dok: AF.SP.05.04.Rev-00<br>Tgl: Mei 2024
+                </td>
             </tr>
-        </thead>
-        <tbody>
-            <tr><td><input type="text" class="text-center"></td><td><input type="text"></td><td><input type="text" class="text-center"></td><td><input type="text" class="text-center"></td></tr>
-            <tr><td><input type="text" class="text-center"></td><td><input type="text"></td><td><input type="text" class="text-center"></td><td><input type="text" class="text-center"></td></tr>
-            <tr><td><input type="text" class="text-center"></td><td><input type="text"></td><td><input type="text" class="text-center"></td><td><input type="text" class="text-center"></td></tr>
-        </tbody>
-    </table>
+            <tr><td colspan="2" align="center" style="background:#eee; font-weight:bold; font-size:14px;">WORK ORDER</td></tr>
+        </table>
 
-    <div style="font-weight: bold; margin-top: 10px; font-size: 11px;">Pengadaan Barang:</div>
-    <table class="data-table">
-        <thead>
-            <tr>
-                <th width="5%">NO</th>
-                <th width="55%">Nama Barang/Jasa</th>
-                <th width="20%">QTY</th>
-                <th width="20%">No.LPBJ</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr><td><input type="text" class="text-center"></td><td><input type="text"></td><td><input type="text" class="text-center"></td><td><input type="text" class="text-center"></td></tr>
-            <tr><td><input type="text" class="text-center"></td><td><input type="text"></td><td><input type="text" class="text-center"></td><td><input type="text" class="text-center"></td></tr>
-        </tbody>
-    </table>
-
-    <div style="font-weight: bold; margin-top: 10px; font-size: 11px; border-bottom: 1px dotted black;">Rekomendasi & catatan:</div>
-    <textarea rows="2" class="lined-textarea"></textarea>
-
-    <div style="margin-top: 10px; border: 1px solid black; padding: 5px;">
-        <div class="flex" style="border-bottom: 1px solid black; padding-bottom: 5px; margin-bottom: 5px;">
-            <div style="width: 25%;">
-                <strong>Hasil Pekerjaan:</strong><br>
-                <label><input type="checkbox"> OK</label><br>
-                <label><input type="checkbox"> NOT OK/REWORK</label>
-            </div>
-            <div style="width: 45%;">
-                <table class="no-border" style="font-size: 10px;">
-                    <tr><td>Waktu Turun Mold Jam Mulai</td><td>: <input type="time" style="width: 80px;"></td></tr>
-                    <tr><td>Waktu Naik Mold Jam Mulai</td><td>: <input type="time" style="width: 80px;"></td></tr>
-                </table>
-            </div>
-            <div style="width: 30%;">
-                <table class="no-border" style="font-size: 10px;">
-                    <tr><td>Jam Selesai</td><td>: <input type="time" style="width: 80px;"></td></tr>
-                    <tr><td>Jam Selesai</td><td>: <input type="time" style="width: 80px;"></td></tr>
-                </table>
-            </div>
+        <div style="border:1px solid black; padding:5px; margin-bottom:5px;">
+            Dari: <input type="text" value="PE" style="width:50px; display:inline;"> 
+            Ke: <input type="text" value="Machining" style="width:80px; display:inline;"> 
+            Tgl: <input type="date" style="width:100px; display:inline;"><br>
+            <label><input type="checkbox"> Perbaikan</label> 
+            <label><input type="checkbox"> Proyek</label> 
+            | Status: <label><input type="checkbox" checked> Normal</label> <label><input type="checkbox"> Urgent</label>
         </div>
 
-        <table class="data-table">
-            <tr style="background-color: #ccc;">
-                <td width="30%">Target Pengerjaan</td>
-                <td width="35%" class="text-center">Tanggal/Jam Mulai</td>
-                <td width="35%" class="text-center">Tanggal/Jam Selesai</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td><input type="text" value="08-02-2026" class="text-center"></td> 
-                <td><input type="text" class="text-center"></td>
-            </tr>
-            <tr style="background-color: #ccc;">
-                <td>Actual Pengerjaan</td>
-                <td class="text-center">Tanggal/Jam Mulai</td>
-                <td class="text-center">Tanggal/Jam Selesai</td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td><input type="text" class="text-center"></td>
-                <td><input type="text" class="text-center"></td>
+        <div class="head-title">Deskripsi Pekerjaan:</div>
+        <textarea rows="4">Pembuatan Flange Siku Stand label me 08...</textarea>
+
+        <div class="head-title">Spare Part / Material:</div>
+        <div class="scroll-table">
+            <table>
+                <tr style="background:#ccc;"><th>No</th><th>Nama Part</th><th>Qty</th><th>Sisa</th></tr>
+                <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+                <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+            </table>
+        </div>
+
+        <div class="head-title">Hasil & Waktu:</div>
+        <div style="border:1px solid black; padding:5px;">
+            <label><input type="checkbox"> OK</label> <label><input type="checkbox"> REWORK</label><br>
+            Mulai: <input type="text" value="08-02-2026 08:00" style="display:inline; width:120px;"> 
+            Selesai: <input type="text" style="display:inline; width:120px;">
+        </div>
+
+        <table style="margin-top:15px; text-align:center; border:none;">
+            <tr style="border:none;">
+                <td style="border:none;">Pelaksana<br>
+                    <canvas id="c1" class="sig-pad" width="120" height="50"></canvas><br>
+                    <button class="btn-clear" onclick="cls('c1')">Hapus</button><br>
+                    <input type="text" placeholder="Nama" style="text-align:center;">
+                </td>
+                <td style="border:none;">Pembuat<br>
+                    <canvas id="c2" class="sig-pad" width="120" height="50"></canvas><br>
+                    <button class="btn-clear" onclick="cls('c2')">Hapus</button><br>
+                    <input type="text" value="Juwanas" style="text-align:center;">
+                </td>
             </tr>
         </table>
-        <div style="text-align: right; font-size: 10px; margin-top: 2px;">Diperiksa & Disetujui:</div>
     </div>
 
-    <div class="signature-section">
-        <div class="sig-box">
-            Pelaksana Pekerjaan<br>Dikerjakan:
-            <br><br>
-            <div class="canvas-container">
-                <canvas id="sig1" width="180" height="70"></canvas>
+    <div id="tab2" class="paper">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <div><b>Bagian:</b> <input type="text" value="Machining" style="display:inline; width:100px; border-bottom:1px solid black;"></div>
+            <div style="text-align:right;">
+                <span class="logo-box">AKG</span><br><span style="font-size:9px;">PT AMARILYS KARISMA GEMILANG</span>
             </div>
-            <button class="clear-sig-btn" onclick="clearSig('sig1')">Hapus Tanda Tangan</button>
-            <input type="text" placeholder="(Nama Pelaksana)" class="text-center" style="margin-top: 5px;">
         </div>
-        <div class="sig-box">
-            <br><br><br>
-            <div class="canvas-container">
-                <canvas id="sig2" width="180" height="70"></canvas>
-            </div>
-            <button class="clear-sig-btn" onclick="clearSig('sig2')">Hapus Tanda Tangan</button>
-            <input type="text" placeholder="(Nama Pemeriksa)" class="text-center" style="margin-top: 5px;">
+        <div style="text-align:center; font-weight:bold; text-decoration:underline; margin-bottom:10px; font-size:14px;">
+            PELAKSANAAN PEKERJAAN WORKSHOP
         </div>
-        <div class="sig-box">
-            Pembuat Work Order<br><br><br>
-            <div class="canvas-container">
-                <canvas id="sig3" width="180" height="70"></canvas>
+
+        <div class="scroll-table">
+            <table>
+                <tr style="background:#eee;">
+                    <th rowspan="2">Tgl</th>
+                    <th rowspan="2">Job Desc</th>
+                    <th colspan="2">Waktu</th>
+                    <th colspan="2">Operator</th>
+                    <th rowspan="2">OK</th>
+                    <th rowspan="2">NOK</th>
+                </tr>
+                <tr style="background:#eee; font-size:9px;">
+                    <th>Mulai</th><th>Selesai</th><th>Nama</th><th>Ttd</th>
+                </tr>
+                <tr><td><input type="text" value="3/2/26"></td><td><textarea rows="2">Mould A</textarea></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td align="center"><input type="checkbox"></td><td align="center"><input type="checkbox"></td></tr>
+                <tr><td><input type="text"></td><td><textarea rows="2"></textarea></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td align="center"><input type="checkbox"></td><td align="center"><input type="checkbox"></td></tr>
+                <tr><td><input type="text"></td><td><textarea rows="2"></textarea></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td align="center"><input type="checkbox"></td><td align="center"><input type="checkbox"></td></tr>
+                <tr><td><input type="text"></td><td><textarea rows="2"></textarea></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td align="center"><input type="checkbox"></td><td align="center"><input type="checkbox"></td></tr>
+                <tr><td><input type="text"></td><td><textarea rows="2"></textarea></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td align="center"><input type="checkbox"></td><td align="center"><input type="checkbox"></td></tr>
+            </table>
+        </div>
+
+        <div style="display:flex; justify-content:space-around; margin-top:20px; text-align:center;">
+            <div>
+                <small>Diperiksa (Spv)</small><br>
+                <canvas id="c3" class="sig-pad" width="100" height="50"></canvas><br>
+                <button class="btn-clear" onclick="cls('c3')">Hapus</button>
             </div>
-            <button class="clear-sig-btn" onclick="clearSig('sig3')">Hapus Tanda Tangan</button>
-            <input type="text" value="(Juwanas)" class="text-center" style="margin-top: 5px;">
+            <div>
+                <small>Mengetahui (Supt)</small><br>
+                <canvas id="c4" class="sig-pad" width="100" height="50"></canvas><br>
+                <button class="btn-clear" onclick="cls('c4')">Hapus</button>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    // --- SETUP SIGNATURE PADS ---
-    function setupCanvas(canvasId) {
-        const canvas = document.getElementById(canvasId);
-        const ctx = canvas.getContext('2d');
-        let painting = false;
+    <div class="bottom-bar">
+        <button class="btn-action btn-print" onclick="window.print()">🖨️ PDF</button>
+        <button class="btn-action btn-save" onclick="saveJpg()">💾 SIMPAN GAMBAR</button>
+    </div>
 
-        function startPosition(e) {
-            painting = true;
-            draw(e);
+    <script>
+        // --- LOGIKA PINDAH TAB ---
+        let activeTab = 'tab1';
+        function switchTab(id) {
+            document.querySelectorAll('.paper').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            // Highlight tombol
+            const btnIndex = id === 'tab1' ? 0 : 1;
+            document.querySelectorAll('.tab-btn')[btnIndex].classList.add('active');
+            activeTab = id;
         }
 
-        function finishedPosition() {
-            painting = false;
-            ctx.beginPath();
-        }
+        // --- LOGIKA TANDA TANGAN (CANVAS) ---
+        function initCanvas(id) {
+            const c = document.getElementById(id);
+            const ctx = c.getContext('2d');
+            let isDrawing = false;
 
-        function draw(e) {
-            if (!painting) return;
-            e.preventDefault(); // Prevent scrolling on touch
-
-            const rect = canvas.getBoundingClientRect();
-            let clientX, clientY;
-
-            if(e.touches) {
-                clientX = e.touches[0].clientX;
-                clientY = e.touches[0].clientY;
-            } else {
-                clientX = e.clientX;
-                clientY = e.clientY;
+            function start(e) { isDrawing = true; draw(e); }
+            function stop() { isDrawing = false; ctx.beginPath(); }
+            function draw(e) {
+                if (!isDrawing) return;
+                e.preventDefault();
+                const rect = c.getBoundingClientRect();
+                const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+                const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+                
+                ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.strokeStyle = '#000088';
+                ctx.lineTo(x, y); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(x, y);
             }
 
-            const x = clientX - rect.left;
-            const y = clientY - rect.top;
+            c.addEventListener('mousedown', start); c.addEventListener('mousemove', draw);
+            c.addEventListener('mouseup', stop); c.addEventListener('mouseout', stop);
+            c.addEventListener('touchstart', start, {passive:false}); 
+            c.addEventListener('touchmove', draw, {passive:false});
+            c.addEventListener('touchend', stop);
+        }
+        
+        ['c1', 'c2', 'c3', 'c4'].forEach(initCanvas);
 
-            ctx.lineWidth = 2;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = '#000088'; // Blue-ish signature ink
-
-            ctx.lineTo(x, y);
-            ctx.stroke();
-            ctx.beginPath();
-            ctx.moveTo(x, y);
+        function cls(id) {
+            const c = document.getElementById(id);
+            c.getContext('2d').clearRect(0, 0, c.width, c.height);
         }
 
-        // Mouse Events
-        canvas.addEventListener('mousedown', startPosition);
-        canvas.addEventListener('mouseup', finishedPosition);
-        canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('mouseout', finishedPosition); // Stop if mouse leaves
+        // --- LOGIKA SIMPAN GAMBAR ---
+        function saveJpg() {
+            const el = document.getElementById(activeTab);
+            
+            // Bersihkan tampilan input sebelum foto
+            const inputs = el.querySelectorAll('input, textarea');
+            inputs.forEach(i => i.style.background = 'transparent');
 
-        // Touch Events (for Mobile)
-        canvas.addEventListener('touchstart', startPosition);
-        canvas.addEventListener('touchend', finishedPosition);
-        canvas.addEventListener('touchmove', draw);
-    }
-
-    // Initialize all 3 canvases
-    setupCanvas('sig1');
-    setupCanvas('sig2');
-    setupCanvas('sig3');
-
-    // Clear function
-    function clearSig(id) {
-        const canvas = document.getElementById(id);
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-
-    // --- SAVE AS IMAGE FUNCTION ---
-    function saveAsImage() {
-        const element = document.getElementById('captureArea');
-        
-        // Hide borders on inputs for cleaner look before capture
-        const inputs = document.querySelectorAll('input, textarea');
-        inputs.forEach(input => input.style.background = 'transparent');
-
-        html2canvas(element, { scale: 2 }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = 'Work_Order_Signed.jpg';
-            link.href = canvas.toDataURL('image/jpeg', 0.9);
-            link.click();
-
-            // Restore input background hints
-            inputs.forEach(input => input.style.background = 'rgba(255, 255, 0, 0.05)');
-        });
-    }
-</script>
-
+            html2canvas(el, { scale: 2 }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = (activeTab === 'tab1' ? 'WO_' : 'Laporan_') + 'AKG.jpg';
+                link.href = canvas.toDataURL('image/jpeg', 0.9);
+                link.click();
+                
+                // Kembalikan warna input
+                inputs.forEach(i => i.style.background = '#fff9c4');
+            });
+        }
+    </script>
 </body>
 </html>
